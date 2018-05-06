@@ -1,12 +1,11 @@
 <?php
 
-namespace reservas\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
-use reservas\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Session;
 
 class PasswordController extends Controller
 {
@@ -23,7 +22,8 @@ class PasswordController extends Controller
 
     use ResetsPasswords;
 
-    protected $subject = "Cambio de contraseña";
+    protected $redirectPath = '/';
+    protected $subject = 'Cambio de contraseña';
 
     /**
      * Create a new password controller instance.
@@ -39,13 +39,9 @@ class PasswordController extends Controller
         */
     }
 
-    public function sendEmail($USER_ID){
-                dump($USER_ID);
-        $user = \reservas\User::findOrFail($USER_ID);
-
-
+    public function sendEmail($id){
+        $user = \App\Models\User::findOrFail($id);
         $this->sendResetLinkEmail($user);
-
     }
 
 
@@ -69,8 +65,8 @@ class PasswordController extends Controller
         //Si está autenticado y no llegó un token...
         if ( auth()->check() && is_null($token) ){
             //Si el rol es admin y el id recibido por GET no es null...
-            if( auth()->user()->rol->ROLE_ROL == 'admin' && Input::get('USER_ID') !== null)
-                $user = \reservas\User::findOrFail(Input::get('USER_ID'));
+            if( \Entrust::hasRole('admin') && Input::get('id') !== null)
+                $user = \App\Models\User::findOrFail(Input::get('id'));
             else
                 $user = auth()->user();
 
@@ -99,9 +95,9 @@ class PasswordController extends Controller
             'remember_token' => Str::random(60),
         ])->save();
 
-        //Auth::guard($this->getGuard())->login($user);
-        Session::flash('alert-info', '¡Contraseña modificada para '.$user->username.'!');
+        flash_alert( '¡Contraseña modificada para '.$user->username.'!', 'success' );
     }
+
 
     /**
      * Get the response for after a successful password reset.
@@ -111,8 +107,8 @@ class PasswordController extends Controller
      */
     protected function getResetSuccessResponse($response)
     {
-        if( auth()->check() && auth()->user()->rol->ROLE_ROL == 'admin' )
-            return redirect('usuarios')->with('status', trans($response));
+        if( auth()->check() && \Entrust::hasRole('admin') )
+            return redirect('auth/usuarios')->with('status', trans($response));
         else
             return redirect($this->redirectPath())->with('status', trans($response));
 

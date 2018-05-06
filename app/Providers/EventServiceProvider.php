@@ -1,6 +1,6 @@
 <?php
 
-namespace reservas\Providers;
+namespace App\Providers;
 
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -13,9 +13,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'reservas\Events\SomeEvent' => [
-            'reservas\Listeners\EventListener',
-        ],
     ];
 
     /**
@@ -28,6 +25,5 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot($events);
 
-        //
     }
 }

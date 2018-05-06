@@ -1,1 +1,0 @@
-@extends('emails/actionCambioContrasena')

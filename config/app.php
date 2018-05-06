@@ -93,7 +93,7 @@ return [
 
     'key' => env('APP_KEY'),
 
-    'cipher' => 'AES-256-CBC',
+    'cipher' => env('APP_CIPHER', 'AES-256-CBC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -147,21 +147,21 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
+        Laracasts\Flash\FlashServiceProvider::class,
 
         /*
          * Application Service Providers...
          */
-        reservas\Providers\AppServiceProvider::class,
-        reservas\Providers\AuthServiceProvider::class,
-        reservas\Providers\EventServiceProvider::class,
-        reservas\Providers\RouteServiceProvider::class,
-        MaddHatter\LaravelFullcalendar\ServiceProvider::class,
-        Barryvdh\DomPDF\ServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
 
-        //Add by DiegoCortes
-        Styde\Html\HtmlServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
-
+        Felixkiss\UniqueWithValidator\ServiceProvider::class,
+        Zizaco\Entrust\EntrustServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
+        OwenIt\Auditing\AuditingServiceProvider::class,
     ],
 
     /*
@@ -208,10 +208,10 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'Calendar' => MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
-
+        'Form'      => Collective\Html\FormFacade::class,
+        'Html'      => Collective\Html\HtmlFacade::class,
+        'Flash'     => Laracasts\Flash\Flash::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
     ],
 
 ];

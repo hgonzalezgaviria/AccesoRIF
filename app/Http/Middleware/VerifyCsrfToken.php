@@ -1,6 +1,6 @@
 <?php
 
-namespace reservas\Http\Middleware;
+namespace App\Http\Middleware;
 
 use Symfony\Component\HttpFoundation\Cookie;
 use Closure;
@@ -31,7 +31,7 @@ class VerifyCsrfToken extends BaseVerifier
         }
 
         // redirect the user back to the last page and show error
-        \Session::flash('alert-danger', 'Disculpa, No fue posible verificar tu solicitud. Por favor intenta nuevamente.');
+        flash_alert( 'Disculpa, no fue posible verificar tu solicitud. Por favor intenta nuevamente.', 'danger' );
         return Redirect::back();
     }
 

@@ -67,7 +67,8 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => reservas\User::class,
+            'model' => App\Models\User::class,
+            'table' => 'users',
         ],
 
         // 'users' => [
@@ -98,7 +99,7 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'email' => 'auth.emails.password',
+            'email' => 'layouts.emails.actionCambioContrasena',
             'table' => 'password_resets',
             'expire' => 60,
         ],

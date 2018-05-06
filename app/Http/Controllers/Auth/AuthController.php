@@ -1,23 +1,27 @@
 <?php
 
-namespace reservas\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
-use reservas\User;
-use reservas\Rol;
 use Validator;
-use reservas\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Input;
+use App\Http\Controllers\App\MenuController;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Rol;
+use App\Models\Menu;
 
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Routing\Redirector;
+use App\Models\Empleador;
 
 class AuthController extends Controller
 {
+	protected $username = 'username';
+	protected $route = 'auth.usuarios';
+	protected $class = User::class;
+
 	/*
 	|--------------------------------------------------------------------------
 	| Registration & Login Controller
@@ -43,9 +47,8 @@ class AuthController extends Controller
 	 *
 	 * @return void
 	 */
-	public function __construct(Redirector $redirect=null)
+	public function __construct()
 	{
-
 		//Lista de acciones que no requieren autenticación
 		$arrActionsLogin = [
 			'logout',
@@ -67,41 +70,14 @@ class AuthController extends Controller
 			'postRegister',
 		];
 
-
 		//Requiere que el usuario inicie sesión, excepto en la vista logout.
 		$this->middleware('auth', [ 'except' => $arrActionsLogin ]);
 
-
-		if(auth()->check() && isset($redirect)){ //Compatibilidad con el comando "php artisan route:list", ya que ingresa como guest y la ruta es nula.		
-			$action = Route::currentRouteAction();
-			$ROLE_ID = auth()->check() ? auth()->user()->ROLE_ID : 0;
-
-			if(in_array(explode("@", $action)[1], $arrActionsAdmin))//Si la acción del controlador se encuentra en la lista de acciones de admin...
-			{
-				if( ! in_array($ROLE_ID , [\reservas\Rol::ADMIN]))//Si el rol no es admin, se niega el acceso.
-				{
-					//Session::flash('alert-danger', 'Usuario no tiene permisos.');
-					abort(403, 'Usuario no tiene permisos!.');
-				}
-			}
-		}
+		$this->middleware('permission:user-index',  ['only' => ['index']]);
+		$this->middleware('permission:user-create', ['only' => ['showRegistrationForm','register']]);
+		$this->middleware('permission:user-edit',   ['only' => ['edit', 'update']]);
+		$this->middleware('permission:user-delete', ['only' => ['destroy']]);
 	}
-
-	 /**
-     * Validate the user login request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     */
-    protected function validateLogin(Request $request)
-    {
-    	//Convierte a minúsculas el usuario
-        $request->username = strtolower($request->username);
-        $this->validate($request, [
-            $this->loginUsername() => 'required', 'password' => 'required',
-        ]);
-    }
-
 
 	/**
 	 * Get a validator for an incoming registration request.
@@ -113,88 +89,90 @@ class AuthController extends Controller
 	{
 		return Validator::make($data, [
 			'name' => 'required|max:255',
-			'username' => 'required|max:15|unique:USERS',
-			'email' => 'required|email|max:255|unique:USERS',
+			'username' => 'required|max:15|unique:users',
+			'cedula' => 'required|max:15|unique:users',
+			'email' => 'required|email|max:255|unique:users',
+			'roles_ids' => 'required|array',
 			'password' => 'required|min:6|confirmed',
-			'ROLE_ID' => 'required',
 		]);
 	}
 
+	/**
+	 * Show the application registration form.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function showRegistrationForm()
+	{
+		//Se crea un array con los Role disponibles
+		$arrRoles = model_to_array(Role::class, 'display_name');
 
-    /**
-     * Show the application registration form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function showRegistrationForm()
-    {
-        if (property_exists($this, 'registerView')) {
-            return view($this->registerView);
-        }
+		//Se crea un array con los Empleadores disponibles
+		$arrEmpleadores = model_to_array(Empleador::class, 'EMPL_NOMBRECOMERCIAL');
 
-		//Se crea una colección con los posibles roles.
-		$roles = Rol::orderBy('ROLE_ID')
-						->select('ROLE_ID', 'ROLE_DESCRIPCION')
-						->get();
+		//Se crea un array con las Gerencias disponibles
+		$arrGerencias = model_to_array(Gerencia::class, 'GERE_DESCRIPCION');
 
-        return view('auth.register', compact('roles'));
-    }
+		//Se crea un array con las Temporales disponibles
+		$arrTemporales = model_to_array(Temporal::class, 'TEMP_NOMBRECOMERCIAL');
+
+		// Muestra el formulario de creación y los array para los 'select'
+		return view('auth.register', compact('arrRoles','arrEmpleadores','arrGerencias','arrTemporales'));
+	}
 
 	/**
-     * Handle a registration request for the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function register(Request $request)
-    {
-        $validator = $this->validator($request->all());
-
-		if( $validator->fails() ) {
-			$this->throwValidationException(
-				$request, $validator
-			);
-		}
-
-		//Auth::guard($this->getGuard())->login($this->create($request->all()));
-		$usuario = $this->create($request->all());
-
-	
-
-		Session::flash('alert-info', 'Usuario '.$usuario->username.' creado exitosamente!');
-		return redirect('usuarios');
-    }
+	 * Handle a registration request for the application.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function register(Request $request)
+	{
+		
+		parent::storeModel(['roles'=>'roles_ids','empleadores'=>'EMPL_ids','gerencias'=>'GERE_ids','temporales'=>'TEMP_ids']);
+	}
 
 	/**
 	 * Create a new user instance after a valid registration.
 	 *
 	 * @param  array  $data
 	 * @return User
-	 */
 	protected function create(array $data)
 	{
 		return User::create([
 			'name' => $data['name'],
-			'username' => $data['username'],
+			'username' => strtolower($data['username']),
 			'email' => $data['email'],
 			'password' => bcrypt($data['password']),
-			'ROLE_ID' => $data['ROLE_ID'],
-			'USER_CREADOPOR' => auth()->user()->username,
+			'created_by' => auth()->user()->username,
 		]);
+	}
+	 */
+
+	/**
+	 * Get the login username to be used by the controller.
+	 *
+	 * @return string
+	 */
+	public function loginUsername()
+	{
+		//Se modifica para que la autenticación se realice por username y no por email
+		return property_exists($this, 'username') ? strtolower($this->username) : 'username';
 	}
 
 
     /**
-     * Get the login username to be used by the controller.
+     * Get the needed authorization credentials from the request.
      *
-     * @return string
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
      */
-    public function loginUsername()
+    protected function getCredentials(Request $request)
     {
-    	//Se modifica para que la autenticación se realice por username y no por email
-        return property_exists($this, 'username') ? $this->username : 'username';
+    	$credentials = $request->only($this->loginUsername(), 'password');
+    	$credentials['username'] = strtolower($credentials['username']);
+        return $credentials;
     }
-
 
 	/**
 	 * Muestra una lista de los registros.
@@ -204,105 +182,152 @@ class AuthController extends Controller
 	public function index()
 	{
 		//Se obtienen todos los registros.
-		$usuarios = User::orderBy('USER_ID')->get();
-
+		$usuarios = User::orderBy('id')->get();
 		//Se carga la vista y se pasan los registros
 		return view('auth/index', compact('usuarios'));
 	}
 
 	/**
-	 * Muestra información de un registro.
+	 * Muestra el formulario para editar un registro en particular.
 	 *
-	 * @param  int  $USER_ID
+	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($USER_ID)
+	public function edit($id)
 	{
 		// Se obtiene el registro
-		$usuario = User::findOrFail($USER_ID);
+		$usuario = User::findOrFail($id);
 
-		// Muestra la vista y pasa el registro
-		return view('auth/show', compact('usuario'));
+		//Se crea un array con los Role disponibles
+		$arrRoles = model_to_array(Role::class, 'display_name');
+		$roles_ids = $usuario->roles->pluck('id')->toJson();
+
+		//Se crea un array con los Empleadores disponibles
+		$arrEmpleadores = model_to_array(Empleador::class, 'EMPL_NOMBRECOMERCIAL');
+		$EMPL_ids = $usuario->empleadores->pluck('EMPL_ID')->toJson();
+
+		//Se crea un array con los Empleadores disponibles
+		$arrGerencias = model_to_array(Gerencia::class, 'GERE_DESCRIPCION');
+		$GERE_ids = $usuario->gerencias->pluck('GERE_ID')->toJson();
+
+		//Se crea un array con las Temporales disponibles
+		$arrTemporales = model_to_array(Temporal::class, 'TEMP_NOMBRECOMERCIAL');
+		$TEMP_ids = $usuario->temporales->pluck('TEMP_ID')->toJson();
+
+		// Muestra el formulario de edición y pasa el registro a editar
+		return view('auth/edit', compact('usuario','arrRoles','roles_ids','arrEmpleadores','arrGerencias','arrTemporales','EMPL_ids','GERE_ids','TEMP_ids'));
 	}
 
 	/**
-	 * Muestra el formulario para editar un registro en particular.
+	 * Actualiza un registro en la base de datos.
 	 *
-	 * @param  int  $USER_ID
+	 * @param  User|int  $usuario
 	 * @return Response
 	 */
-	public function edit($USER_ID)
+	public function update($usuario)
 	{
-		// Se obtiene el registro
-		$usuario = User::findOrFail($USER_ID);
+		// Valida si $usuario es un objeto User o el id
+		$usuario = isset($usuario->id) ? $usuario : User::findOrFail($usuario);
 
-		//Se crea una colección con los posibles roles.
-		$roles = Rol::orderBy('ROLE_ID')
-						->select('ROLE_ID', 'ROLE_DESCRIPCION')
-						->get();
+		//Validación de datos
+		$validator = Validator::make(request()->all(), [
+			'name' => 'required|max:255',
+			'email' => 'required|email|max:255|unique:users,email,'.$usuario->id.',id',
+			'cedula' => 'required|numeric|unique:users,cedula,'.$usuario->id.',id',
+		]);
 
-		// Muestra el formulario de edición y pasa el registro a editar
-		return view('auth/edit', compact('usuario', 'roles'));
+		if($validator->passes()){
+			$usuario->name = Input::get('name');
+			$usuario->email = Input::get('email');
+			$usuario->cedula = Input::get('cedula');
+			$usuario->USER_MODIFICADOPOR = auth()->user()->username;
+			//Se guarda modelo
+			$usuario->save();
+
+			//Relación con roles
+			$roles_ids = Input::has('roles_ids') ? Input::get('roles_ids') : [];
+			$usuario->roles()->sync($roles_ids, true);
+
+			//Relación con empleadores
+			$empl_ids = Input::has('EMPL_ids') ? Input::get('EMPL_ids') : [];
+			$usuario->empleadores()->sync($empl_ids, true);
+
+			//Relación con gerencias
+			$gere_ids = Input::has('GERE_ids') ? Input::get('GERE_ids') : [];
+			$usuario->gerencias()->sync($gere_ids, true);
+
+			//Relación con temporales
+			$temp_ids = Input::has('TEMP_ids') ? Input::get('TEMP_ids') : [];
+			$usuario->temporales()->sync($temp_ids, true);
+
+			// redirecciona al index de controlador
+			flash_alert( 'Usuario '.$usuario->username.' modificado exitosamente!', 'success' );
+			return redirect()->route('auth.usuarios.index');
+		} else {
+			return redirect()->back()->withErrors($validator)->withInput();
+		}
+
 	}
 
-    /**
-     * Actualiza un registro en la base de datos.
-     *
-     * @param  int  $USER_ID
-     * @return Response
-     */
-    public function update($USER_ID)
-    {
-
-
-        //Validación de datos
-        $this->validate(request(), [
-			'name' => 'required|max:255',
-			'email' => 'required|email|max:255',
-			'ROLE_ID' => 'required',
-			'email' => 'required|email|max:255|unique:USERS,email,'.$USER_ID.',USER_ID'
-        ]);
-
-        // Se obtiene el registro
-        $usuario = User::findOrFail($USER_ID);
-
-        $usuario->name = Input::get('name');
-        $usuario->email = Input::get('email');
-        $usuario->ROLE_ID = Input::get('ROLE_ID'); //Relación con Rol
-        $usuario->USER_MODIFICADOPOR = auth()->user()->username;
-        //Se guarda modelo
-        $usuario->save();
-
-        // redirecciona al index de controlador
-        Session::flash('alert-info', 'Usuario '.$usuario->username.' modificado exitosamente!');
-        return redirect('usuarios');
-    }
-
-    /**
+	/**
 	 * Elimina un registro de la base de datos.
 	 *
-	 * @param  int  $USER_ID
+	 * @param  User|int  $usuario
 	 * @return Response
 	 */
-	public function destroy($USER_ID)
+	public function destroy($usuario)
 	{
-		$usuario = User::findOrFail($USER_ID);
+		// Valida si $usuario es un objeto User o el id
+		$usuario = isset($usuario->id) ? $usuario : User::findOrFail($usuario);
 
 		//Si el usuario fue creado por SYSTEM, no se puede borrar.
 		if($usuario->USER_CREADOPOR == 'SYSTEM'){
-			Session::flash('alert-danger', '¡Usuario '.$usuario->username.' no se puede borrar!');
-	    } else {
-
-			if($usuario->personaGeneral)
-				$usuario->personaGeneral->delete();
-
-			$usuario->USER_ELIMINADOPOR = auth()->user()->username;
-			$usuario->save();
+			flash_modal( '¡Usuario '.$usuario->username.' no se puede borrar!', 'danger' );
+		} else {
 			$usuario->delete();
-			
-			Session::flash('alert-warning', ['¡Usuario '.$usuario->username.' borrado!']);
+			flash_alert( '¡Usuario '.$usuario->username.' borrado!', 'warning' );
 		}
 
-	    return redirect('usuarios');
+		return redirect()->route('auth.usuarios.index')->send();
 	}
+
+    /**
+     * Send the response after the user was authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  bool  $throttles
+     * @return \Illuminate\Http\Response
+     */
+    protected function handleUserWasAuthenticated(Request $request, $throttles)
+    {
+    	//Se crea arreglo en session con los items del menú disponibles
+        MenuController::refreshMenu();
+
+        //parent::handleUserWasAuthenticated($request, $throttles);
+        if ($throttles) {
+            $this->clearLoginAttempts($request);
+        }
+
+        if (method_exists($this, 'authenticated')) {
+            return $this->authenticated($request, Auth::guard($this->getGuard())->user());
+        }
+
+        return redirect()->intended($this->redirectPath());
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout()
+    {
+    	//Se elimina arreglo en session con los items del menú disponibles
+        MenuController::destroyMenu();
+
+        \Auth::guard($this->getGuard())->logout();
+
+        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
+    }
+
 }

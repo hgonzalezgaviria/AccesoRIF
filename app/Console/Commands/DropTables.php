@@ -1,6 +1,6 @@
 <?php
 
-namespace reservas\Console\Commands;
+namespace App\Console\Commands;
 
 use DB;
 use Illuminate\Console\Command;
@@ -19,7 +19,7 @@ class DropTables extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Borra todas las tablas de la base de datos actual.';
 
     /**
      * Create a new command instance.

@@ -1,4 +1,5 @@
 <?php
+use App\Models\User;
 
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
@@ -22,4 +23,32 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         return $app;
     }
+
+    public function testLogin()
+    {
+        $this->visit('/login')
+            ->type('admin', 'username')
+            ->type('123', 'password')
+            ->press('login')
+            ->seePageIs('/');
+    }
+
+    protected function validatePermissions($user, $url_array, $codeStatus=403, $text='Error 403: Forbidden')
+    {
+        $this->be($user); //You are now authenticated
+        foreach ($url_array as $url) {
+            dump('validatePermissions in '.$url);
+            $this->actingAs($user)
+                ->get($url)
+                ->assertResponseStatus($codeStatus)
+                ->see($text);
+        }
+    }
+
+    protected function findUser($username)
+    {
+        return User::where('username',$username)->get()->first();
+    }
+
+
 }

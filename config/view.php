@@ -39,4 +39,5 @@ return [
     */
 
     'formatDateTime' => 'd/m/Y h:i A',
+
 ];

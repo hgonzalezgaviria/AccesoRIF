@@ -1,6 +1,6 @@
 <?php
 
-namespace reservas\Providers;
+namespace App\Providers;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -14,7 +14,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'reservas\Http\Controllers';
+    protected $namespace = 'App\Http\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -24,11 +24,14 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(Router $router)
     {
-        //
-
+        $router->patterns([
+            'PROP_ID'=>'[0-9]+',
+            'VEHI_ID'=>'[0-9]+',
+            'MULT_ID'=>'[0-9]+',
+        ]);
         parent::boot($router);
     }
-
+    
     /**
      * Define the routes for the application.
      *

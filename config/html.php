@@ -18,7 +18,7 @@ return [
      * Doing so the component will run slightly faster but
      * the logged and roles checkers won't be available
      */
-    'control_access' => true,
+    'control_access' => env('HTML_CONTROL_ACCESS', true),
 
     /*
      * Set to false to deactivate the Translator for the alert and menu
@@ -29,7 +29,7 @@ return [
      * to search for attribute names and other texts,
      * regardless of this configuration value.
      */
-    'translate_texts' => true,
+    'translate_texts' => env('HTML_TRANSLATE_TEXTS', true),
 
     /*
      * Set to true to deactivate HTML5 form validation
