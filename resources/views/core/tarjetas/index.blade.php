@@ -21,6 +21,7 @@
 			<tr>
 				<th class="col-md-1">ID Tarjeta RFID</th>
 				<th class="col-md-3">Descripción</th>
+				<th class="col-md-3">Propietario</th>
 				<th class="col-md-3">Estado</th>
 
 				<th class="col-md-1 all notFilter"></th>
@@ -32,6 +33,7 @@
 			<tr>
 				<td>{{ $tarjeta -> TARJ_IDTAG }}</td>
 				<td>{{ $tarjeta -> TARJ_DESCRIPCION }}</td>
+				<td>{{ $tarjeta -> PROP_NOMBRE }}</td>
 				<td>{{ $tarjeta -> TARJ_ESTADO ? 'ACTIVO' : 'INACTIVO' }}</td>
 				<td>
 					<!-- Botón Editar (edit) -->
@@ -40,7 +42,7 @@
 					</a>
 
 					<!-- carga botón de borrar -->
-					{{ Form::button('<i class="fa fa-trash" aria-hidden="true"></i>',[
+					{{-- Form::button('<i class="fa fa-trash" aria-hidden="true"></i>',[
 						'class'=>'btn btn-xs btn-danger btn-delete',
 						'data-toggle'=>'modal',
 						'data-id'=> $tarjeta->TARJ_ID,
@@ -50,7 +52,7 @@
 						'data-target'=>'#pregModalDelete',
 						'data-tooltip'=>'tooltip',
 						'title'=>'Borrar',
-					])}}
+					])--}}
 				</td>
 			</tr>
 			@endforeach

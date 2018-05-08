@@ -24,13 +24,26 @@ class TarjetaController extends Controller
 	 */
 	public function index()
 	{
+
+			$tarjetas = Tarjeta::join('PROPIETARIOS', 'PROPIETARIOS.PROP_ID', '=', 'TARJETAS.PROP_ID')
+						->select([
+							'TARJ_ID',
+							'PROP_CEDULA',
+							'PROP_NOMBRE',
+							'PROP_APELLIDO',
+							'TARJ_IDTAG',							
+							'TARJ_DESCRIPCION',
+							'TARJ_ESTADO',						
+						])->get();
+
+		/*
 		$tarjetas = Tarjeta::select([
 					'TARJ_ID',
 					'TARJ_IDTAG',
 					'TARJ_DESCRIPCION',
 					'TARJ_ESTADO',
 				])->get();
-
+*/
 		return view($this->route.'.index', compact('tarjetas'));
 	}
 

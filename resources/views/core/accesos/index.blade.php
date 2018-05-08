@@ -1,4 +1,4 @@
-@extends('layouts.menu')
+	@extends('layouts.menu')
 @section('title', '/ Accesos')
 
 @section('page_heading')
@@ -15,20 +15,24 @@
 		</div>
 		-->
 	</div>
+
 @endsection
+
 
 @section('section')
 
+	@rinclude('FormFilters')
+	
 	<table class="table table-striped" id="tabla">
 		<thead>
 			<tr>
 				<th class="col-md-1">Id</th>
-				<th class="col-md-2"> ID Usuario</th>
+				<th class="col-md-1"> Cedula</th>
 				<th class="col-md-3"> Nombre Usuario</th>
-				<th class="col-md-2">RFID</th>
+				<th class="col-md-1">RFID</th>
 				<th class="col-md-3">Fecha Entrada</th>
 				<th class="col-md-3">Fecha Salida</th>
-				<th class="col-md-1">Tipo Acceso</th>
+				<!--th class="col-md-1">Tipo Acceso</th-->
 				<th class="col-md-1">Estado</th>
 			</tr>
 		</thead>
@@ -41,9 +45,8 @@
 				<td>{{ $acceso -> PROP_NOMBRE }}</td>
 				<td>{{ $acceso -> TARJ_IDTAG }}</td>
 				<td>{{ $acceso -> ACCE_FECHAENTRADA }}</td>
-				<td>{{ $acceso -> ACCE_FECHASALIDA }}</td>
-				<td>{{ $acceso -> ACCE_TIPOACCESO }}</td>
-				<td>{{ $acceso -> ACCE_ESTADO }}</td>
+				<td>{{ $acceso -> ACCE_FECHASALIDA }}</td>				
+				<td>{{ $acceso -> ACCE_ESTADO=="E" ? 'ENTRADA' : 'SALIDA'  }}</td>
 			</tr>
 			@endforeach
 		</tbody>

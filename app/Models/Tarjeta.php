@@ -34,6 +34,12 @@ class Tarjeta extends ModelWithSoftDeletes
 		return $rules;
 	}
 	
+	public function accesos()
+	{
+		$foreingKey = 'ACCE_ID';
+		return $this->hasMany(Acceso::class, $foreingKey);
+	}
+
 	public function propietario()
 	{
 		$foreingKey = 'PROP_ID';

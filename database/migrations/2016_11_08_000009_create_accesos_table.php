@@ -22,6 +22,7 @@ class CreateAccesosTable extends Migration
 
             $table->increments('ACCE_ID');
             $table->unsignedInteger('PROP_ID');
+            $table->unsignedInteger('TARJ_ID');
             $table->timestamp('ACCE_FECHAENTRADA');
             $table->timestamp('ACCE_FECHASALIDA')->nullable();
             $table->unsignedInteger('ACCE_TIPOACCESO');
@@ -46,6 +47,11 @@ class CreateAccesosTable extends Migration
             $table->foreign('PROP_ID')
             ->references('PROP_ID')
             ->on('PROPIETARIOS')
+            ->onDelete('cascade');
+            //Relaciones
+            $table->foreign('TARJ_ID')
+            ->references('TARJ_ID')
+            ->on('TARJETAS')
             ->onDelete('cascade');
 
         });

@@ -23,12 +23,11 @@ class Acceso extends ModelWithSoftDeletes
 		'ACCE_TIPOACCESO',
 		'ACCE_ESTADO',
 		'PROP_ID',
+		'TARJ_ID',
 	];
 
 	public static function rules($id = 0){
 		$rules = [
-			
-			
 			'ACCE_FECHAENTRADA' => ['required'],
 			'ACCE_FECHASALIDA' => ['required'],
 			'ACCE_TIPOACCESO' => ['required'],
@@ -37,10 +36,15 @@ class Acceso extends ModelWithSoftDeletes
 		return $rules;
 	}
 	
-	public function propietarios()
+	public function propietario()
 	{
 		$foreingKey = 'PROP_ID';
 		return $this->belongsTo(Propietario::class, $foreingKey);
+	}
+	public function tarjeta()
+	{
+		$foreingKey = 'TARJ_ID';
+		return $this->belongsTo(Tarjeta::class, $foreingKey);
 	}
 
 }

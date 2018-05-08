@@ -28,8 +28,8 @@ class AccesoController extends Controller
 	 */
 	public function index()
 	{
-		$accesos = Acceso::join('PROPIETARIOS', 'PROPIETARIOS.PROP_ID', '=', 'ACCESOS.PROP_ID')
-						->join('TARJETAS', 'TARJETAS.PROP_ID', '=', 'ACCESOS.PROP_ID')
+		$accesos = Acceso::leftJoin('PROPIETARIOS', 'PROPIETARIOS.PROP_ID', '=', 'ACCESOS.PROP_ID')
+						->leftJoin('TARJETAS', 'TARJETAS.TARJ_ID', '=', 'ACCESOS.TARJ_ID')
 						->select([
 							'ACCE_ID',
 							'PROP_CEDULA',
@@ -42,7 +42,16 @@ class AccesoController extends Controller
 							'ACCE_ESTADO',
 						])->get();
 
-		return view($this->route.'.index', compact('accesos'));
+		$PROP_NOMBRECOMPLETO = expression_concat([
+			'PROP_CEDULA',
+			'PROP_NOMBRE',
+			'PROP_APELLIDO',
+		], 'PROP_NOMBRECOMPLETO');
+		$arrPropietarios = model_to_array(Propietario::class, $PROP_NOMBRECOMPLETO);
+
+		$arrTarjetas = model_to_array(Tarjeta::class, 'TARJ_IDTAG');
+
+		return view($this->route.'.index', compact('accesos','arrPropietarios','arrTarjetas'));
 	}
 
 
@@ -121,6 +130,7 @@ class AccesoController extends Controller
 
 		$prop_id = $tarjeta->propietario->PROP_ID;
 		$acceso = Acceso::where('PROP_ID', $prop_id)
+						->where('TARJ_ID',$tarjeta->TARJ_ID)
 						->where('ACCE_ESTADO','E')
 						//->where('ACCE_FECHASALIDA', null)
 						->get()->first();
@@ -138,6 +148,7 @@ class AccesoController extends Controller
 				'ACCE_ESTADO'	=>'E',
 				'ACCE_FECHAENTRADA'=>Carbon::now(),
 				'PROP_ID'=>$prop_id,
+				'TARJ_ID'=>$tarjeta->TARJ_ID,
 			]);
 		}
 		return json_encode(["success" => 1]);;
