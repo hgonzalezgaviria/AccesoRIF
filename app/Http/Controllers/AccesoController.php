@@ -132,7 +132,7 @@ class AccesoController extends Controller
 		$acceso = Acceso::where('PROP_ID', $prop_id)
 						->where('TARJ_ID',$tarjeta->TARJ_ID)
 						->where('ACCE_ESTADO','E')
-						//->where('ACCE_FECHASALIDA', null)
+						->where('ACCE_FECHASALIDA', NULL)
 						->get()->first();
 
 		//dump($acceso);
@@ -142,7 +142,9 @@ class AccesoController extends Controller
 				'ACCE_ESTADO'	=>'S',
 				'ACCE_FECHASALIDA'=>Carbon::now(),
 				]);
+			return json_encode(["success" => 1]);
 		} else {
+			//dd($acceso);
 			Acceso::create([
 				'ACCE_TIPOACCESO'=>1,
 				'ACCE_ESTADO'	=>'E',
@@ -151,7 +153,7 @@ class AccesoController extends Controller
 				'TARJ_ID'=>$tarjeta->TARJ_ID,
 			]);
 		}
-		return json_encode(["success" => 1]);;
+		return json_encode(["success" => 1]);
 	}
 
 }
