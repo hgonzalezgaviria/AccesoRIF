@@ -39,13 +39,10 @@ Route::group(['middleware'=>'auth'], function() {
 
 Route::group(['prefix'=>'core', 'middleware'=>'auth'], function() {
 	Route::resource('propietarios', 'PropietarioController', ['except'=>['show'], 'parameters'=>['propietario'=>'PROP_ID']]);
-	Route::get('propietarios/getTable', 'PropietarioController@getData');
 
 	Route::resource('tarjetas', 'TarjetaController', ['except'=>['show'], 'parameters'=>['tarjeta'=>'TARJ_ID']]);
-	Route::get('vehiculos/getTable', 'VehiculoController@getData');
-	
+		
 	Route::resource('accesos', 'AccesoController', ['except'=>['show'], 'parameters'=>['acceso'=>'ACCE_ID']]);
-	Route::get('multas/getTable', 'MultaController@getData');
 });
 
 

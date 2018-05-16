@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Acceso;
 use App\Models\Tarjeta;
+use App\Models\Propietario;
 use Carbon\Carbon;
 
 class AccesoController extends Controller
@@ -142,7 +143,7 @@ class AccesoController extends Controller
 				'ACCE_ESTADO'	=>'S',
 				'ACCE_FECHASALIDA'=>Carbon::now(),
 				]);
-			return json_encode(["success" => 1]);
+			return json_encode(["success" => 2]);
 		} else {
 			//dd($acceso);
 			Acceso::create([
