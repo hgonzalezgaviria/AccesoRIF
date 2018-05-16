@@ -93,7 +93,7 @@ class MenuTableSeeder extends Seeder
 		Menu::create([
 			'MENU_LABEL' => 'Tarjetas',
 			'MENU_URL' => 'core/tarjetas',
-			'MENU_ICON' => 'fa-car',
+			'MENU_ICON' => 'fa-credit-card-alt',
 			'MENU_ORDER' => $orderMenuTop++,
 			'MENU_POSITION' => 'TOP',
 			'PERM_ID' => $this->getPermission('tarjeta-index'),
@@ -101,10 +101,19 @@ class MenuTableSeeder extends Seeder
 		Menu::create([
 			'MENU_LABEL' => 'Accesos',
 			'MENU_URL' => 'core/accesos',
-			'MENU_ICON' => 'fa-ticket',
+			'MENU_ICON' => 'fa-500px',
 			'MENU_ORDER' => $orderMenuTop++,
 			'MENU_POSITION' => 'TOP',
 			'PERM_ID' => $this->getPermission('acceso-index'),
+		]);
+
+		Menu::create([
+			'MENU_LABEL' => 'Horarios',
+			'MENU_URL' => 'core/horarios',
+			'MENU_ICON' => 'fa-calendar-plus-o',
+			'MENU_ORDER' => $orderMenuTop++,
+			'MENU_POSITION' => 'TOP',
+			'PERM_ID' => $this->getPermission('horario-index'),
 		]);
 
 		/*Menu::create([

@@ -60,6 +60,7 @@ use App\Models\Permission;
                 $this->createPermissions(Propietario::class, 'propietarios');
                 $this->createPermissions(Acceso::class, 'accesos');
                 $this->createPermissions(Tarjeta::class, 'tarjetas');
+                $this->createPermissions(Horario::class, 'horarios');
 
                 
 

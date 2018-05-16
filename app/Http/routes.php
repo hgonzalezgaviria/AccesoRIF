@@ -43,6 +43,8 @@ Route::group(['prefix'=>'core', 'middleware'=>'auth'], function() {
 	Route::resource('tarjetas', 'TarjetaController', ['except'=>['show'], 'parameters'=>['tarjeta'=>'TARJ_ID']]);
 		
 	Route::resource('accesos', 'AccesoController', ['except'=>['show'], 'parameters'=>['acceso'=>'ACCE_ID']]);
+
+	Route::resource('horarios', 'HorarioController', ['except'=>['show'], 'parameters'=>['horario'=>'HORA_ID']]);
 });
 
 

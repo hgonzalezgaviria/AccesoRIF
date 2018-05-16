@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
 		
         $this->call(PropietariosTableSeeder::class);
         $this->call(TarjetasTableSeeder::class);
+        $this->call(HorariosTableSeeder::class);
         
         
         
