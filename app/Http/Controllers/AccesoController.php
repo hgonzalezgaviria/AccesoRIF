@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Acceso;
 use App\Models\Tarjeta;
 use App\Models\Propietario;
+use App\Models\Horario;
 use Carbon\Carbon;
 
 class AccesoController extends Controller
@@ -42,13 +43,14 @@ class AccesoController extends Controller
 							'ACCE_TIPOACCESO',
 							'ACCE_ESTADO',
 						])->get();
-
+/*
 		$PROP_NOMBRECOMPLETO = expression_concat([
 			'PROP_CEDULA',
 			'PROP_NOMBRE',
 			'PROP_APELLIDO',
 		], 'PROP_NOMBRECOMPLETO');
-		$arrPropietarios = model_to_array(Propietario::class, $PROP_NOMBRECOMPLETO);
+*/
+		$arrPropietarios = model_to_array(Propietario::class, 'PROP_CEDULA');
 
 		$arrTarjetas = model_to_array(Tarjeta::class, 'TARJ_IDTAG');
 
@@ -118,6 +120,10 @@ class AccesoController extends Controller
 		//return compact('arrVehiculos');
 	}
 
+	public function validaHorario(){
+
+	}
+
 	public function verifyUserAccess(Request $request)
 	{
 		$id = $request->input('tagid');
@@ -143,7 +149,7 @@ class AccesoController extends Controller
 				'ACCE_ESTADO'	=>'S',
 				'ACCE_FECHASALIDA'=>Carbon::now(),
 				]);
-			return json_encode(["success" => 2]);
+			return json_encode(["success" => 2]); //Sale
 		} else {
 			//dd($acceso);
 			Acceso::create([
@@ -154,7 +160,7 @@ class AccesoController extends Controller
 				'TARJ_ID'=>$tarjeta->TARJ_ID,
 			]);
 		}
-		return json_encode(["success" => 1]);
+		return json_encode(["success" => 1]); //Entra
 	}
 
 }

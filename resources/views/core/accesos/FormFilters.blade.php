@@ -1,3 +1,5 @@
+@include('chosen')
+@include('datepicker')
 @section('head')
 	<style>
 		/* Define el tamaño de los input-group-addon para que sean todos iguales */
@@ -9,8 +11,7 @@
 @parent
 @endsection
 
-@include('chosen')
-@include('datepicker')
+
 
 <!-- Filtrar datos en vista -->
 
@@ -28,20 +29,14 @@
 		{{ Form::open(['id'=>'formFilter' , 'class' => 'form-vertical']) }}
 
 	
-		@include('widgets.forms.input', ['type'=>'select', 'column'=>5, 'name'=>'PROP_ID', 'label'=>'Propietario', 'data'=>$arrPropietarios, 'options'=>['required']])
-		@include('widgets.forms.input', ['type'=>'select', 'column'=>5, 'name'=>'TARJ_ID', 'label'=>'Tarjeta', 'data'=>$arrTarjetas, 'options'=>['required']])
+		@include('widgets.forms.input', ['type'=>'select', 'column'=>5, 'name'=>'PROP_ID', 'id'=>'PROP_ID', 'label'=>'Propietario', 'data'=>$arrPropietarios, 'options'=>['required']])
 
-		@include('widgets.forms.input', ['type'=>'date', 'column'=>5, 'name'=>'ACCE_FECHAENTRADA', 'label'=>'Fecha Entrada', 'options'=>['required'] ])
-		@include('widgets.forms.input', ['type'=>'date', 'column'=>5, 'name'=>'ACCE_FECHASALIDA', 'label'=>'Fecha Salida', 'options'=>['required'] ])
+		@include('widgets.forms.input', ['type'=>'select', 'column'=>5, 'name'=>'TARJ_ID', 'id'=>'TARJ_ID',  'label'=>'Tarjeta', 'data'=>$arrTarjetas, 'options'=>['required']])
+
+		@include('widgets.forms.input', ['type'=>'date', 'column'=>5, 'name'=>'ACCE_FECHAENTRADA', 'label'=>'Fecha Inicio', 'options'=>['required'] ])
+		@include('widgets.forms.input', ['type'=>'date', 'column'=>5, 'name'=>'ACCE_FECHASALIDA', 'label'=>'Fecha Fin', 'options'=>['required'] ])
 
 	{{ Form::close() }}
 	</div>
 </div>
 
-@section('scripts')
-
-<script type="text/javascript">
-
-</script>
-@parent
-@endsection

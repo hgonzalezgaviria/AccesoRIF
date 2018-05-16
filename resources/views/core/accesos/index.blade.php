@@ -1,5 +1,101 @@
-	@extends('layouts.menu')
+@extends('layouts.menu')
 @section('title', '/ Accesos')
+@section('scripts')
+ <script type="text/javascript">
+       	
+    	
+     $(document).ready(function (){
+  
+
+	    var table1 = $('#tabla').DataTable();
+		
+
+		 	table1.responsive.rebuild();
+			table1.responsive.recalc();
+			table1.draw();
+
+					table1.on( 'draw.dt', function () {
+		    
+		} );
+
+
+		/*
+		Button filter
+		*/
+		//BUSQUEDA POR COLUMNA
+/*
+		$('#PROP_ID').on( 'keyup', function () {
+		    table1
+		        .columns( 1 )
+		        .search( this.value )
+		        .draw();
+		} );
+*/
+			$('#PROP_ID').change(function () {
+		    table1
+		        .columns( 1 )
+		        .search( $('#PROP_ID option:selected').text() )
+			 var op = $("#PROP_ID").val();
+		        
+		        .draw();
+		} );
+
+			alert(op);
+
+
+
+				$('#TARJ_ID').change(function () {
+		    table1
+		        .columns( 3 )
+		        .search( $('#TARJ_ID option:selected').text() )
+		        .draw();
+		} );
+
+/*
+
+				$('#TARJ_ID').on( 'keyup', function () {
+		    table1
+		        .columns( 3 )
+		        .search( this.value )
+		        .draw();
+		} );
+
+*/
+
+
+	  });
+
+     //Obtener fecha del sistemas
+		
+		function fecha(){
+				var hoy = new Date();
+				var dd = hoy.getDate();
+				var mm = hoy.getMonth()+1; //hoy es 0!
+				var yyyy = hoy.getFullYear();
+				var hora = hoy.getHours();
+				var minuto = hoy.getMinutes();
+				var segundo = hoy.getSeconds(); 
+
+				if(dd<10) {
+				    dd='0'+dd
+				} 
+
+				if(mm<10) {
+				    mm='0'+mm
+				} 
+
+				//hoy = mm+'/'+dd+'/'+yyyy;
+				hoy = yyyy+mm+dd+'_'+hora+minuto+segundo;
+
+				return hoy;
+		}
+
+		
+
+    </script>
+
+@parent
+@endsection
 
 @section('page_heading')
 	<div class="row">
