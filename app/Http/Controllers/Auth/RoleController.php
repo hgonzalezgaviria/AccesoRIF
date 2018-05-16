@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 
 use App\Models\Role;
+use App\Models\Permission;
 
 class RoleController extends Controller
 {

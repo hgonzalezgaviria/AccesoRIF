@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 
 use App\Models\Menu;
+use App\Models\Permission;
 
 class MenuController extends Controller
 {
