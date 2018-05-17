@@ -98,14 +98,33 @@ class MenuTableSeeder extends Seeder
 			'MENU_POSITION' => 'TOP',
 			'PERM_ID' => $this->getPermission('tarjeta-index'),
 		]);
-		Menu::create([
+
+			$orderItem = 0;
+			$parent = Menu::create([
 			'MENU_LABEL' => 'Accesos',
-			'MENU_URL' => 'core/accesos',
-			'MENU_ICON' => 'fa-500px',
+			'MENU_ICON' => 'fa-tripadvisor',
 			'MENU_ORDER' => $orderMenuTop++,
 			'MENU_POSITION' => 'TOP',
-			'PERM_ID' => $this->getPermission('acceso-index'),
-		]);
+			]);
+					Menu::create([
+						'MENU_LABEL' => 'Detalle Accesos',
+							'MENU_URL' => 'core/accesos',
+							'MENU_ICON' => 'fa-500px',
+						'MENU_PARENT' => $parent->MENU_ID,
+						'MENU_ORDER' => $orderMenuTop++,
+						'MENU_POSITION' => 'TOP',
+						'PERM_ID' => $this->getPermission('acceso-index'),
+					]);
+
+					Menu::create([
+					'MENU_LABEL' => 'Intentos',
+					'MENU_URL' => 'core/intentosfallidos',
+					'MENU_ICON' => 'fa-low-vision',
+					'MENU_PARENT' => $parent->MENU_ID,
+					'MENU_ORDER' => $orderMenuTop++,
+					'MENU_POSITION' => 'TOP',
+					'PERM_ID' => $this->getPermission('intentofallido-index'),
+					]);
 
 		Menu::create([
 			'MENU_LABEL' => 'Horarios',

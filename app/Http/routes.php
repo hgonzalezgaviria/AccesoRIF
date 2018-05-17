@@ -44,6 +44,8 @@ Route::group(['prefix'=>'core', 'middleware'=>'auth'], function() {
 		
 	Route::resource('accesos', 'AccesoController', ['except'=>['show'], 'parameters'=>['acceso'=>'ACCE_ID']]);
 
+		Route::resource('intentosfallidos', 'IntentoFallidoController', ['except'=>['show'], 'parameters'=>['intentofallido'=>'INFA_ID']]);
+
 	Route::resource('horarios', 'HorarioController', ['except'=>['show'], 'parameters'=>['horario'=>'HORA_ID']]);
 });
 

@@ -10,6 +10,7 @@ use App\Models\Acceso;
 use App\Models\Tarjeta;
 use App\Models\Propietario;
 use App\Models\Horario;
+use App\Models\IntentoFallido;
 use Carbon\Carbon;
 
 class AccesoController extends Controller
@@ -124,18 +125,37 @@ class AccesoController extends Controller
 
 	}
 
+		public function addIntento($motivo, $id){
+
+			IntentoFallido::create([
+						'INFA_TAGID'=>$id,
+						'INFA_MOTIVO'	=>$motivo,
+						'INFA_FECHAPROCESO'=>Carbon::now(),				
+					]);
+
+	}
+
 	public function verifyUserAccess(Request $request)
 	{
 		$id = $request->input('tagid');
 		$tarjeta = Tarjeta::with('propietario')->where('TARJ_IDTAG', $id)
-							->where('TARJ_ESTADO', true)
+							//->where('TARJ_ESTADO', true)
 							->has('propietario')
 							->get()->first();
 
-		if(!isset($tarjeta))
+		//if($tarjeta->TARJ_ESTADO)
+
+
+		if(!isset($tarjeta)){
+			$this->addIntento('Tarjeta no esta registrada', $id);				
 			return json_encode(["success" => 0]);
 
-		$prop_id = $tarjeta->propietario->PROP_ID;
+			}elseif (!$tarjeta->TARJ_ESTADO) {
+				$this->addIntento('Tarjeta inactiva', $tarjeta->TARJ_IDTAG);
+				return json_encode(["success" => 0]);				
+			}else{
+
+				$prop_id = $tarjeta->propietario->PROP_ID;
 		$acceso = Acceso::where('PROP_ID', $prop_id)
 						->where('TARJ_ID',$tarjeta->TARJ_ID)
 						->where('ACCE_ESTADO','E')
@@ -149,6 +169,7 @@ class AccesoController extends Controller
 				'ACCE_ESTADO'	=>'S',
 				'ACCE_FECHASALIDA'=>Carbon::now(),
 				]);
+			$this->addIntento('Una entrada sin salida', $tarjeta->TARJ_IDTAG);				
 			return json_encode(["success" => 2]); //Sale
 		} else {
 			//dd($acceso);
@@ -160,7 +181,11 @@ class AccesoController extends Controller
 				'TARJ_ID'=>$tarjeta->TARJ_ID,
 			]);
 		}
+
 		return json_encode(["success" => 1]); //Entra
+		
+		}
+		
 	}
 
 }

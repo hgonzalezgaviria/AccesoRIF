@@ -25,8 +25,8 @@ class Permission extends EntrustPermission
 
 	public static function rules($id = 0){
 		return [
-			'name' => 'required|max:15|'.static::unique($id,'name'),
-			'display_name' => 'required|max:50|'.static::unique($id,'display_name'),
+			'name' => 'required|max:60|'.static::unique($id,'name'),
+			'display_name' => 'required|max:100|'.static::unique($id,'display_name'),
 			'description'  => ['required','max:100'],
 		];
 	}

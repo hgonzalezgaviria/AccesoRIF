@@ -61,6 +61,7 @@ use App\Models\Permission;
                 $this->createPermissions(Acceso::class, 'accesos');
                 $this->createPermissions(Tarjeta::class, 'tarjetas');
                 $this->createPermissions(Horario::class, 'horarios');
+                $this->createPermissions(IntentoFallido::class, 'intentosfallidos');
 
                 
 
