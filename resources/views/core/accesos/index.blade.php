@@ -1,66 +1,75 @@
 @extends('layouts.menu')
 @section('title', '/ Accesos')
-@section('scripts')
+@push('scripts')
  <script type="text/javascript">
-       	
-    	
+
+	// Date range filter
+	var minDateFilter = "";
+	var maxDateFilter = "";
+	 $.fn.dataTable.ext.search.push(
+  		function(oSettings, aData, iDataIndex) {
+	    	
+
+	    if (typeof aData._date == 'undefined') {
+	      aData._date = new Date(aData[4]).getTime();
+	    }
+
+	        console.log(aData._date);
+	    if (minDateFilter && !isNaN(minDateFilter)) {
+	      if (aData._date <= minDateFilter) {
+	        return false;
+	      }
+	    }
+
+	    if (maxDateFilter && !isNaN(maxDateFilter)) {
+	      if (aData._date >= maxDateFilter) {
+	        return false;
+	      }
+	    }
+
+	    return true;
+	});
+
      $(document).ready(function (){
   
-
 	    var table1 = $('#tabla').DataTable();
-		
-
 		 	table1.responsive.rebuild();
 			table1.responsive.recalc();
 			table1.draw();
-
-					table1.on( 'draw.dt', function () {
-		    
-		} );
-
+			table1.on( 'draw.dt', function () {});
 
 		/*
 		Button filter
 		*/
 		//BUSQUEDA POR COLUMNA
-/*
-		$('#PROP_ID').on( 'keyup', function () {
+		$('#PROP_ID').change(function () {
 		    table1
 		        .columns( 1 )
-		        .search( this.value )
-		        .draw();
-		} );
-*/
-			$('#PROP_ID').change(function () {
-		    table1
-		        .columns( 1 )
-		        .search( $('#PROP_ID option:selected').text() )
-			 var op = $("#PROP_ID").val();
-		        
+		        .search( $('#PROP_ID option:selected').text() )			 
 		        .draw();
 		} );
 
-			alert(op);
-
-
-
-				$('#TARJ_ID').change(function () {
+		$('#TARJ_ID').change(function () {
 		    table1
 		        .columns( 3 )
 		        .search( $('#TARJ_ID option:selected').text() )
 		        .draw();
 		} );
+		
+		
+		$('#ACCE_FECHAENTRADA').datetimepicker({format: 'YYYY-MM-DD'})
+		.on('dp.change', function (e) {
+    		minDateFilter = new Date(e.date).getTime();
+	        console.log(minDateFilter);
+		    table1.draw();
+		});
 
-/*
-
-				$('#TARJ_ID').on( 'keyup', function () {
-		    table1
-		        .columns( 3 )
-		        .search( this.value )
-		        .draw();
-		} );
-
-*/
+		$('#ACCE_FECHASALIDA').datetimepicker({format: 'YYYY-MM-DD'})
+		.on('dp.change', function (e) {
+    		maxDateFilter = new Date(e.date).getTime();
+	        console.log(maxDateFilter);
+		    table1.draw();
+		});
 
 
 	  });
@@ -94,8 +103,7 @@
 
     </script>
 
-@parent
-@endsection
+@endpush
 
 @section('page_heading')
 	<div class="row">

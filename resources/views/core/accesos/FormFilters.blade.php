@@ -33,7 +33,7 @@
 
 		@include('widgets.forms.input', ['type'=>'select', 'column'=>5, 'name'=>'TARJ_ID', 'id'=>'TARJ_ID',  'label'=>'Tarjeta', 'data'=>$arrTarjetas, 'options'=>['required']])
 
-		@include('widgets.forms.input', ['type'=>'date', 'column'=>5, 'name'=>'ACCE_FECHAENTRADA', 'label'=>'Fecha Inicio', 'options'=>['required'] ])
+		@include('widgets.forms.input', ['type'=>'date', 'column'=>5, 'name'=>'ACCE_FECHAENTRADA', 'id'=>'ACCE_FECHAENTRADA', 'label'=>'Fecha Inicio', 'options'=>['required'] ])
 		@include('widgets.forms.input', ['type'=>'date', 'column'=>5, 'name'=>'ACCE_FECHASALIDA', 'label'=>'Fecha Fin', 'options'=>['required'] ])
 
 	{{ Form::close() }}

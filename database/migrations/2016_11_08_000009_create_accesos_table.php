@@ -23,8 +23,8 @@ class CreateAccesosTable extends Migration
             $table->increments('ACCE_ID');
             $table->unsignedInteger('PROP_ID');
             $table->unsignedInteger('TARJ_ID');
-            $table->timestamp('ACCE_FECHAENTRADA');
-            $table->timestamp('ACCE_FECHASALIDA')->nullable();
+            $table->dateTime('ACCE_FECHAENTRADA');
+            $table->dateTime('ACCE_FECHASALIDA')->nullable();
             $table->unsignedInteger('ACCE_TIPOACCESO');
             $table->string('ACCE_ESTADO');
             

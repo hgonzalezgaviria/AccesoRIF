@@ -39,7 +39,7 @@
 		//bScrollCollapse: true,
 		//sScrollY: '300px',
 		responsive: true,
-		stateSave:  true,
+		stateSave:  false,
 		language: { 
 			sProcessing:     'Procesando...', 
 			sLengthMenu:     'Mostrar _MENU_ registros', 
