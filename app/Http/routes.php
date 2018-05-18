@@ -49,8 +49,22 @@ Route::group(['prefix'=>'core', 'middleware'=>'auth'], function() {
 	Route::resource('horarios', 'HorarioController', ['except'=>['show'], 'parameters'=>['horario'=>'HORA_ID']]);
 });
 
+Route::group(['prefix'=>'reportes', 'namespace'=>'Reportes', 'middleware'=>'auth'], function() {
+	Route::get('/', 'ReporteController@index');
+	Route::get('/viewForm', 'ReporteController@viewForm');	
+	
+	Route::post('AccesosFechas', 'RptAccesosController@accesosFechas');
+	Route::post('AccesosUsuarios', 'RptAccesosController@accesosUsuarios');
+
+});
+
 
 Route::get('verificarAcceso', 'AccesoController@verifyUserAccess');
+Route::get('getArrPropietarios', 'AccesoController@getArrPropietarios');
+
+//Route::get('validaHorario', 'AccesoController@validaHorario');
+
+
 
 
 

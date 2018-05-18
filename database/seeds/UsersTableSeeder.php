@@ -52,6 +52,15 @@ use App\Models\Permission;
                     'description'  => '¡CUIDADO! Permite realizar cargas masivas de datos en el sistema.',
                 ]);*/
 
+                    $reportes = Permission::create([
+                    'name'         => 'reportes',
+                    'display_name' => 'Reportes',
+                    'description'  => 'Permite ejecutar reportes y exportarlos.',
+                ]);
+
+                $this->rolOwner->attachPermission($reportes);
+                $this->rolAdmin->attachPermissions([$reportes]);
+
 
                 $this->createPermissions(User::class, 'usuarios');
                 $this->createPermissions(Role::class, 'roles');

@@ -21,7 +21,8 @@ class AccesoController extends Controller
 	public function __construct()
 	{
 		//parent::__construct();
-		$this->middleware('auth')->except(['verifyUserAccess']);
+		$this->middleware('auth')->except(['verifyUserAccess','validaHorario']);
+
 	}
 
 	/**
@@ -44,18 +45,40 @@ class AccesoController extends Controller
 							'ACCE_TIPOACCESO',
 							'ACCE_ESTADO',
 						])->get();
-/*
+		
+
 		$PROP_NOMBRECOMPLETO = expression_concat([
 			'PROP_CEDULA',
 			'PROP_NOMBRE',
 			'PROP_APELLIDO',
 		], 'PROP_NOMBRECOMPLETO');
-*/
-		$arrPropietarios = model_to_array(Propietario::class, 'PROP_CEDULA');
+		$arrPropietarios = model_to_array(Propietario::class, $PROP_NOMBRECOMPLETO, 'PROP_CEDULA');
+		//dd($arrPropietarios );
+		//$arrPropietarios = model_to_array(Propietario::class, $PROP_NOMBRECOMPLETO);
 
-		$arrTarjetas = model_to_array(Tarjeta::class, 'TARJ_IDTAG');
+		//$arrTarjetas = model_to_array(Tarjeta::class, 'TARJ_IDTAG',[['CAMPO_FILTRO','=',valor]]);
+		$tarjetas = Tarjeta::where('TARJ_ESTADO',true)->get();
+		$arrTarjetas = model_to_array($tarjetas, 'TARJ_IDTAG');
+/*
+			$arrTarjetas = Tarjeta::select([
+					'TARJ_IDTAG',								
+				])->get();
+				*/
 
 		return view($this->route.'.index', compact('accesos','arrPropietarios','arrTarjetas'));
+	}
+
+
+	public function getArrPropietarios()
+	{
+		$PROP_NOMBRECOMPLETO = expression_concat([
+			'PROP_CEDULA',
+			'PROP_NOMBRE',
+			'PROP_APELLIDO',
+		], 'PROP_NOMBRECOMPLETO');
+		$arrPropietarios = model_to_array(Propietario::class, $PROP_NOMBRECOMPLETO, 'PROP_CEDULA');
+		
+		return response()->json($arrPropietarios);
 	}
 
 
@@ -122,8 +145,45 @@ class AccesoController extends Controller
 	}
 
 	public function validaHorario(){
+		//$id = $request->input('tagid');
 
-	}
+		$carbon= Carbon::now(); //Obtener fecha actual
+		//dump($carbon->toDateString());
+		//dump((int)$carbon->format('H:i'));
+		//dump($carbon->hour);
+		$hora=$carbon->format('H:i'); //Obtener hora actual en entero	
+		//$minute=$carbon->minute; 
+		//dump($hora);
+		$dayNumber = $carbon->format('N'); // Obtener el numero del día 1:Lunes, 2: Martes, 3 Miercoles
+
+			$horario = Horario::select([
+					'HORA_HORA_INICIO',
+					'HORA_HORA_FIN',				
+				])->where('HORA_ID_DIA', $dayNumber)
+				  ->where('HORA_ESTADO', true)
+				 ->get()->first();
+
+						
+			//dump(Carbon::parse($horario['HORA_HORA_INICIO']));
+		
+					
+			if(isset($horario)){
+				$horaInicio = Carbon::parse($horario['HORA_HORA_INICIO']);
+				$horaInicio = $horaInicio->format('H:i');
+				$horaFin = Carbon::parse($horario['HORA_HORA_FIN']);
+				$horaFin = $horaFin->format('H:i');
+				
+				if (($hora >= $horaInicio) && ($hora <= $horaFin)){
+				return true;
+				}else{
+
+				return false;
+//				dump(false);
+				}		
+			}
+
+	return true;
+}
 
 		public function addIntento($motivo, $id){
 
@@ -152,37 +212,47 @@ class AccesoController extends Controller
 
 			}elseif (!$tarjeta->TARJ_ESTADO) {
 				$this->addIntento('Tarjeta inactiva', $tarjeta->TARJ_IDTAG);
-				return json_encode(["success" => 0]);				
+				return json_encode(["success" => 3]);				
 			}else{
 
-				$prop_id = $tarjeta->propietario->PROP_ID;
-		$acceso = Acceso::where('PROP_ID', $prop_id)
-						->where('TARJ_ID',$tarjeta->TARJ_ID)
-						->where('ACCE_ESTADO','E')
-						->where('ACCE_FECHASALIDA', NULL)
-						->get()->first();
+				if($this->validaHorario()){
 
-		//dump($acceso);
-		if(isset($acceso)){
-			$acceso->update([
-				'ACCE_TIPOACCESO'=>2,
-				'ACCE_ESTADO'	=>'S',
-				'ACCE_FECHASALIDA'=>Carbon::now(),
-				]);
-			$this->addIntento('Una entrada sin salida', $tarjeta->TARJ_IDTAG);				
-			return json_encode(["success" => 2]); //Sale
-		} else {
-			//dd($acceso);
-			Acceso::create([
-				'ACCE_TIPOACCESO'=>1,
-				'ACCE_ESTADO'	=>'E',
-				'ACCE_FECHAENTRADA'=>Carbon::now(),
-				'PROP_ID'=>$prop_id,
-				'TARJ_ID'=>$tarjeta->TARJ_ID,
-			]);
-		}
+							$prop_id = $tarjeta->propietario->PROP_ID;
+							$acceso = Acceso::where('PROP_ID', $prop_id)
+							->where('TARJ_ID',$tarjeta->TARJ_ID)
+							->where('ACCE_ESTADO','E')
+							->where('ACCE_FECHASALIDA', NULL)
+							->get()->first();
 
-		return json_encode(["success" => 1]); //Entra
+						//dump($acceso);
+						if(isset($acceso)){
+							$acceso->update([
+								'ACCE_TIPOACCESO'=>2,
+								'ACCE_ESTADO'	=>'S',
+								'ACCE_FECHASALIDA'=>Carbon::now(),
+								]);
+							$this->addIntento('Una entrada sin salida', $tarjeta->TARJ_IDTAG);				
+							return json_encode(["success" => 2]); //Sale
+						} else {
+							//dd($acceso);
+							Acceso::create([
+								'ACCE_TIPOACCESO'=>1,
+								'ACCE_ESTADO'	=>'E',
+								'ACCE_FECHAENTRADA'=>Carbon::now(),
+								'PROP_ID'=>$prop_id,
+								'TARJ_ID'=>$tarjeta->TARJ_ID,
+							]);
+						}
+
+						return json_encode(["success" => 1]); //Entra
+
+				}else{
+						$this->addIntento('Prohibido el ingreso en este horario', $id);		
+						return json_encode(["success" => 3]);
+
+				}
+
+			
 		
 		}
 		

@@ -135,6 +135,16 @@ class MenuTableSeeder extends Seeder
 			'PERM_ID' => $this->getPermission('horario-index'),
 		]);
 
+   
+         		Menu::create([
+			'MENU_LABEL' => 'Reportes',
+			'MENU_URL' => 'reportes',
+			'MENU_ICON' => 'fa fa-filter',
+			'MENU_ORDER' => $orderMenuTop++,
+			'MENU_POSITION' => 'TOP',
+			'PERM_ID' => $this->getPermission('reportes'),
+		]);
+
 		/*Menu::create([
 			'MENU_LABEL' => 'Tickets',
 			'MENU_URL' => 'cnfg-tickets/tickets',

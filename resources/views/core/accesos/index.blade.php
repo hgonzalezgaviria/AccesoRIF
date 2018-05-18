@@ -45,9 +45,10 @@
 		$('#PROP_ID').change(function () {
 		    table1
 		        .columns( 1 )
-		        .search( $('#PROP_ID option:selected').text() )			 
+		        .search( $('#PROP_ID option:selected').val() )			 
 		        .draw();
 		} );
+
 
 		$('#TARJ_ID').change(function () {
 		    table1
@@ -56,7 +57,7 @@
 		        .draw();
 		} );
 		
-		
+		/*
 		$('#ACCE_FECHAENTRADA').datetimepicker({format: 'YYYY-MM-DD'})
 		.on('dp.change', function (e) {
     		minDateFilter = new Date(e.date).getTime();
@@ -71,7 +72,7 @@
 		    table1.draw();
 		});
 
-
+*/
 	  });
 
      //Obtener fecha del sistemas
